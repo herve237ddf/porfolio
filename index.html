@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hervé Nguefa Djifack — Data Analyst & BI Analyst</title>
+<meta name="description" content="Portfolio de Hervé Nguefa Djifack — Data Analyst & Business Intelligence Analyst à Douala, Cameroun. Power BI, Python, SQL, reporting." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════════════════════════
+   TOKENS — "Tableau de bord" identity system
+   Light = papier crème / Dark = encre profonde
+   Constants: terracotta (accent primaire) + sauge (accent données)
+   ════════════════════════════════════════════════════════════ */
+:root {
+  --serif: 'Fraunces', serif;
+  --sans: 'Inter', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+
+  --terracotta: #D4622E;
+  --terracotta-soft: #E8956A;
+  --sauge: #2C6E5C;
+  --sauge-soft: #4F9580;
+
+  --radius-sm: 3px;
+  --radius: 7px;
+  --max: 1180px;
+  --trans: .3s cubic-bezier(.4,0,.2,1);
+}
+
+/* DARK THEME (default) — encre profonde */
+html[data-theme="dark"] {
+  --bg: #0E1A1F;
+  --bg-raised: #142329;
+  --bg-raised2: #1A2C33;
+  --ink: #F4EFE6;
+  --ink-soft: #B8C4C2;
+  --ink-faint: #6E7E7C;
+  --line: rgba(244,239,230,.10);
+  --line-strong: rgba(244,239,230,.18);
+  --accent: var(--terracotta-soft);
+  --accent-data: var(--sauge-soft);
+  --shadow: 0 20px 60px -20px rgba(0,0,0,.5);
+}
+
+/* LIGHT THEME — papier crème */
+html[data-theme="light"] {
+  --bg: #FAF7F0;
+  --bg-raised: #F1ECDF;
+  --bg-raised2: #E9E2D0;
+  --ink: #1B1410;
+  --ink-soft: #534B40;
+  --ink-faint: #8A7B6C;
+  --line: rgba(27,20,16,.10);
+  --line-strong: rgba(27,20,16,.18);
+  --accent: var(--terracotta);
+  --accent-data: var(--sauge);
+  --shadow: 0 20px 60px -20px rgba(27,20,16,.18);
+}
+
+/* ─── RESET ──────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.6;
+  overflow-x: hidden;
+  transition: background var(--trans), color var(--trans);
+}
+::selection { background: var(--accent); color: var(--bg); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+a { color: inherit; text-decoration: none; }
+ul { list-style: none; }
+img { max-width: 100%; display: block; }
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ─── UTILITIES ──────────────────────────────────────────── */
+.container { max-width: var(--max); margin: 0 auto; padding: 0 2rem; }
+.mono { font-family: var(--mono); }
+.accent { color: var(--accent); }
+.accent-data { color: var(--accent-data); }
+
+.eyebrow {
+  display: flex; align-items: center; gap: .9rem;
+  font-family: var(--mono);
+  font-size: .72rem; font-weight: 500; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--accent);
+  margin-bottom: 1.1rem;
+}
+.eyebrow::before {
+  content: ''; width: 28px; height: 1px; background: var(--accent);
+}
+.eyebrow .idx { color: var(--ink-faint); }
+
+.section { padding: 7rem 0; position: relative; }
+.section-alt { background: var(--bg-raised); }
+.section-title {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(1.9rem, 3.4vw, 2.7rem);
+  letter-spacing: -.01em;
+  color: var(--ink);
+  max-width: 18ch;
+}
+.section-title em { font-style: italic; color: var(--accent); font-weight: 500; }
+.section-head {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  flex-wrap: wrap; gap: 1.5rem;
+  margin-bottom: 3.5rem;
+}
+.section-note {
+  font-size: .92rem; color: var(--ink-faint);
+  max-width: 30ch; text-align: right;
+}
+@media (max-width: 700px) { .section-note { text-align: left; } }
+
+.divider { border: none; border-top: 1px solid var(--line); }
+
+/* fade-in on scroll */
+.reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ─── NAV ────────────────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+  transition: background var(--trans), border-color var(--trans);
+}
+.nav-inner {
+  max-width: var(--max); margin: 0 auto; padding: 0 2rem;
+  height: 64px; display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo {
+  font-family: var(--mono); font-size: .92rem; font-weight: 600;
+  letter-spacing: -.02em; color: var(--ink);
+  display: flex; align-items: center; gap: .5rem;
+}
+.nav-logo .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); display: inline-block; }
+.nav-links { display: flex; gap: 2.2rem; align-items: center; }
+.nav-links a {
+  font-size: .82rem; font-weight: 500; color: var(--ink-soft);
+  transition: color var(--trans); position: relative; padding: .3rem 0;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 1px;
+  background: var(--accent); transform: scaleX(0); transform-origin: left;
+  transition: transform var(--trans);
+}
+.nav-links a:hover { color: var(--ink); }
+.nav-links a:hover::after { transform: scaleX(1); }
+
+.theme-toggle {
+  width: 38px; height: 38px; border-radius: 50%;
+  border: 1px solid var(--line-strong); background: var(--bg-raised);
+  color: var(--ink); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .95rem; transition: border-color var(--trans), transform var(--trans);
+  flex-shrink: 0;
+}
+.theme-toggle:hover { border-color: var(--accent); transform: rotate(14deg); }
+
+.nav-cta {
+  font-family: var(--mono); font-size: .78rem; font-weight: 600;
+  padding: .55rem 1.15rem;
+  border: 1px solid var(--ink); color: var(--ink);
+  border-radius: var(--radius-sm);
+  transition: background var(--trans), color var(--trans);
+}
+.nav-cta:hover { background: var(--ink); color: var(--bg); }
+
+.hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
+.hamburger span { width: 22px; height: 2px; background: var(--ink); transition: var(--trans); }
+
+.mobile-nav {
+  display: none; position: fixed; inset: 0; z-index: 99; background: var(--bg);
+  flex-direction: column; align-items: center; justify-content: center; gap: 2.2rem;
+}
+.mobile-nav.open { display: flex; }
+.mobile-nav a { font-family: var(--serif); font-size: 1.8rem; color: var(--ink); }
+.mobile-nav a:hover { color: var(--accent); }
+.mobile-close { position: absolute; top: 1.4rem; right: 1.6rem; font-size: 1.4rem; color: var(--ink-faint); cursor: pointer; background: none; border: none; }
+
+@media (max-width: 880px) {
+  .nav-links, .nav-cta-wrap { display: none; }
+  .hamburger { display: flex; }
+}
+
+/* ─── HERO ───────────────────────────────────────────────── */
+#hero {
+  min-height: 100vh; display: flex; align-items: center;
+  padding: 7rem 0 4rem; position: relative;
+}
+.hero-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 4rem; align-items: center; }
+.hero-kicker {
+  font-family: var(--mono); font-size: .8rem; font-weight: 500; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--accent-data);
+  display: flex; align-items: center; gap: .6rem; margin-bottom: 1.6rem;
+}
+.hero-kicker .pulse {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--accent-data);
+  position: relative;
+}
+.hero-kicker .pulse::after {
+  content: ''; position: absolute; inset: -4px; border-radius: 50%;
+  border: 1px solid var(--accent-data); animation: pulse 2.2s ease-out infinite;
+}
+@keyframes pulse { 0% { transform: scale(.6); opacity: 1; } 100% { transform: scale(2); opacity: 0; } }
+
+h1.hero-name {
+  font-family: var(--serif); font-weight: 500;
+  font-size: clamp(2.8rem, 6vw, 4.6rem); line-height: 1.02; letter-spacing: -.02em;
+  color: var(--ink); margin-bottom: 1.6rem;
+}
+h1.hero-name .it { font-style: italic; color: var(--accent); }
+
+.hero-bio {
+  font-size: 1.08rem; color: var(--ink-soft); max-width: 46ch;
+  margin-bottom: 2.4rem; line-height: 1.75;
+}
+.hero-bio strong { color: var(--ink); font-weight: 600; }
+
+.hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 3.2rem; }
+.btn-primary {
+  padding: .85rem 1.8rem; background: var(--ink); color: var(--bg);
+  font-weight: 600; font-size: .88rem; border-radius: var(--radius-sm);
+  transition: background var(--trans), transform var(--trans);
+  display: inline-flex; align-items: center; gap: .5rem;
+}
+.btn-primary:hover { background: var(--accent); color: #fff; transform: translateY(-2px); }
+.btn-outline {
+  padding: .85rem 1.8rem; border: 1px solid var(--line-strong); color: var(--ink);
+  font-weight: 500; font-size: .88rem; border-radius: var(--radius-sm);
+  transition: border-color var(--trans), transform var(--trans);
+}
+.btn-outline:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+/* ── stat strip — the "dashboard" signature ── */
+.hero-stats { display: grid; grid-template-columns: repeat(3, auto); gap: 2.6rem; }
+.hstat-num {
+  font-family: var(--mono); font-size: 1.9rem; font-weight: 700; color: var(--ink);
+  line-height: 1; display: flex; align-items: baseline; gap: .15rem;
+}
+.hstat-num .unit { font-size: 1rem; color: var(--accent); font-weight: 600; }
+.hstat-label { font-size: .78rem; color: var(--ink-faint); margin-top: .4rem; max-width: 16ch; }
+
+/* ── hero panel: live "dashboard card" ── */
+.hero-panel {
+  background: var(--bg-raised); border: 1px solid var(--line);
+  border-radius: 12px; padding: 1.6rem; box-shadow: var(--shadow);
+  font-family: var(--mono);
+}
+.hp-head {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-bottom: 1.1rem; margin-bottom: 1.1rem; border-bottom: 1px solid var(--line);
+}
+.hp-head-title { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); }
+.hp-dots { display: flex; gap: 5px; }
+.hp-dots span { width: 7px; height: 7px; border-radius: 50%; background: var(--line-strong); }
+.hp-row { display: flex; justify-content: space-between; align-items: center; padding: .65rem 0; border-bottom: 1px solid var(--line); }
+.hp-row:last-of-type { border-bottom: none; }
+.hp-row-label { font-size: .78rem; color: var(--ink-soft); }
+.hp-row-val { font-size: .82rem; font-weight: 600; color: var(--ink); }
+.hp-bar-track { height: 5px; background: var(--bg-raised2); border-radius: 3px; overflow: hidden; margin-top: .4rem; }
+.hp-bar-fill { height: 100%; border-radius: 3px; transform-origin: left; transform: scaleX(0); animation: barGrow 1.3s cubic-bezier(.4,0,.2,1) forwards; }
+@keyframes barGrow { to { transform: scaleX(1); } }
+.hp-skills { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.2rem; }
+.hp-skill {
+  font-size: .68rem; font-weight: 600; padding: .3rem .65rem;
+  background: var(--bg-raised2); border: 1px solid var(--line); border-radius: 100px; color: var(--ink-soft);
+}
+
+@media (max-width: 880px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .hero-panel { max-width: 420px; }
+  .hero-stats { gap: 1.8rem; }
+}
+
+/* ─── SKILLS ─────────────────────────────────────────────── */
+.skills-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.skill-cell { background: var(--bg); padding: 2rem 1.7rem; transition: background var(--trans); }
+.skill-cell:hover { background: var(--bg-raised); }
+.skill-cell-num { font-family: var(--mono); font-size: .72rem; color: var(--accent); margin-bottom: 1rem; }
+.skill-cell h3 {
+  font-family: var(--serif); font-weight: 500; font-size: 1.18rem; color: var(--ink);
+  margin-bottom: 1rem;
+}
+.skill-list li {
+  font-size: .85rem; color: var(--ink-soft); padding: .3rem 0;
+  border-top: 1px solid var(--line); display: flex; gap: .55rem;
+}
+.skill-list li:first-child { border-top: none; }
+.skill-list li::before { content: '—'; color: var(--ink-faint); flex-shrink: 0; }
+
+@media (max-width: 900px) { .skills-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .skills-grid { grid-template-columns: 1fr; } }
+
+/* ─── EXPERIENCE ─────────────────────────────────────────── */
+.exp-list { display: flex; flex-direction: column; }
+.exp-item {
+  display: grid; grid-template-columns: 13rem 1fr; gap: 2.5rem;
+  padding: 2.6rem 0; border-top: 1px solid var(--line);
+}
+.exp-item:last-child { border-bottom: 1px solid var(--line); }
+.exp-period { font-family: var(--mono); font-size: .8rem; color: var(--accent); padding-top: .3rem; }
+.exp-type { display: block; font-size: .72rem; color: var(--ink-faint); margin-top: .4rem; text-transform: uppercase; letter-spacing: .06em; }
+.exp-role { font-family: var(--serif); font-weight: 500; font-size: 1.35rem; color: var(--ink); margin-bottom: .25rem; }
+.exp-org { font-size: .9rem; color: var(--ink-faint); margin-bottom: 1.1rem; }
+.exp-tasks li {
+  font-size: .92rem; color: var(--ink-soft); padding: .35rem 0; padding-left: 1.3rem; position: relative; line-height: 1.6;
+}
+.exp-tasks li::before { content: '›'; position: absolute; left: 0; color: var(--accent-data); font-weight: 700; }
+.exp-tools { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.2rem; }
+.exp-tool {
+  font-family: var(--mono); font-size: .68rem; font-weight: 500; padding: .28rem .6rem;
+  background: var(--bg-raised); border: 1px solid var(--line); border-radius: var(--radius-sm); color: var(--ink-faint);
+}
+
+@media (max-width: 700px) {
+  .exp-item { grid-template-columns: 1fr; gap: .8rem; }
+}
+
+/* ─── PROJECTS ───────────────────────────────────────────── */
+.projects-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+.project-card {
+  background: var(--bg-raised); border: 1px solid var(--line); border-radius: 12px;
+  padding: 2.2rem; display: flex; flex-direction: column;
+  transition: border-color var(--trans), transform var(--trans), box-shadow var(--trans);
+}
+.project-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: var(--shadow); }
+.pc-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.4rem; }
+.pc-tag {
+  font-family: var(--mono); font-size: .68rem; font-weight: 600; letter-spacing: .06em;
+  text-transform: uppercase; padding: .3rem .65rem; border-radius: 100px;
+  background: color-mix(in srgb, var(--accent-data) 15%, transparent); color: var(--accent-data);
+}
+.pc-metric { font-family: var(--mono); font-size: 1.6rem; font-weight: 700; color: var(--ink); line-height: 1; }
+.pc-metric span { font-size: .68rem; color: var(--ink-faint); font-weight: 500; display: block; margin-top: .3rem; }
+.pc-title { font-family: var(--serif); font-weight: 500; font-size: 1.32rem; color: var(--ink); margin-bottom: .75rem; line-height: 1.25; }
+.pc-desc { font-size: .9rem; color: var(--ink-soft); line-height: 1.7; flex: 1; }
+.pc-tools { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.4rem; padding-top: 1.4rem; border-top: 1px solid var(--line); }
+.pc-tool { font-family: var(--mono); font-size: .68rem; color: var(--ink-faint); }
+.pc-tool:not(:last-child)::after { content: '·'; margin-left: .5rem; color: var(--line-strong); }
+
+@media (max-width: 760px) { .projects-grid { grid-template-columns: 1fr; } }
+
+/* ─── CERTIFICATIONS ─────────────────────────────────────── */
+.certs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+.cert-card {
+  border: 1px solid var(--line); border-radius: 10px; padding: 1.5rem;
+  transition: border-color var(--trans), transform var(--trans);
+  display: flex; flex-direction: column; gap: .9rem;
+}
+.cert-card:hover { border-color: var(--accent-data); transform: translateY(-2px); }
+.cert-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+.cert-name { font-size: .96rem; font-weight: 600; color: var(--ink); line-height: 1.4; }
+.cert-date { font-family: var(--mono); font-size: .68rem; color: var(--accent-data); white-space: nowrap; flex-shrink: 0; padding-top: .15rem; }
+.cert-issuer { font-size: .8rem; color: var(--ink-faint); }
+.cert-verify { font-family: var(--mono); font-size: .7rem; color: var(--ink-faint); margin-top: auto; }
+.cert-verify a { color: var(--ink-faint); border-bottom: 1px dotted var(--line-strong); transition: color var(--trans); }
+.cert-verify a:hover { color: var(--accent-data); }
+
+@media (max-width: 900px) { .certs-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .certs-grid { grid-template-columns: 1fr; } }
+
+/* ─── EDUCATION strip ─────────────────────────────────────── */
+.edu-row {
+  display: grid; grid-template-columns: 13rem 1fr 8rem; gap: 1.5rem; align-items: baseline;
+  padding: 1.5rem 0; border-top: 1px solid var(--line);
+}
+.edu-row:last-child { border-bottom: 1px solid var(--line); }
+.edu-period { font-family: var(--mono); font-size: .78rem; color: var(--accent); }
+.edu-name { font-family: var(--serif); font-size: 1.1rem; color: var(--ink); }
+.edu-status { font-size: .76rem; color: var(--ink-faint); text-align: right; }
+@media (max-width: 700px) {
+  .edu-row { grid-template-columns: 1fr; gap: .3rem; }
+  .edu-status { text-align: left; }
+}
+
+/* ─── CONTACT ────────────────────────────────────────────── */
+#contact { background: var(--bg-raised); border-top: 1px solid var(--line); }
+.contact-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 4rem; align-items: center; }
+.contact-title {
+  font-family: var(--serif); font-weight: 500; font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.1; margin-bottom: 1.3rem; color: var(--ink);
+}
+.contact-title em { font-style: italic; color: var(--accent); }
+.contact-sub { font-size: 1rem; color: var(--ink-soft); max-width: 42ch; line-height: 1.7; margin-bottom: 2.2rem; }
+.contact-links { display: flex; flex-direction: column; gap: .9rem; }
+.contact-link {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.1rem 1.3rem; border: 1px solid var(--line-strong); background: var(--bg);
+  border-radius: var(--radius); transition: border-color var(--trans), transform var(--trans);
+}
+.contact-link:hover { border-color: var(--accent); transform: translateX(4px); }
+.cl-label { font-family: var(--mono); font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-faint); margin-bottom: .25rem; }
+.cl-value { font-size: .96rem; font-weight: 500; color: var(--ink); }
+.cl-arrow { color: var(--accent); font-size: 1.1rem; }
+
+.contact-panel {
+  background: var(--bg); border: 1px solid var(--line-strong);
+  border-radius: 12px; padding: 2rem; font-family: var(--mono);
+  box-shadow: var(--shadow);
+}
+.cp-label { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-faint); margin-bottom: 1.4rem; }
+.cp-row { display: flex; justify-content: space-between; padding: .8rem 0; border-top: 1px solid var(--line); font-size: .85rem; gap: 1rem; }
+.cp-row:first-of-type { border-top: none; }
+.cp-k { color: var(--ink-faint); }
+.cp-v { color: var(--ink); font-weight: 600; text-align: right; }
+.cp-v.open { color: var(--accent-data); }
+
+@media (max-width: 880px) { .contact-grid { grid-template-columns: 1fr; gap: 2.5rem; } }
+
+/* ─── FOOTER ─────────────────────────────────────────────── */
+footer {
+  background: var(--bg); color: var(--ink-faint);
+  padding: 1.8rem 0; text-align: center; font-size: .78rem;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <div class="nav-inner">
+    <a href="#hero" class="nav-logo"><span class="dot"></span>H. Nguefa Djifack</a>
+    <ul class="nav-links">
+      <li><a href="#about">Profil</a></li>
+      <li><a href="#skills">Compétences</a></li>
+      <li><a href="#experience">Expérience</a></li>
+      <li><a href="#projects">Projets</a></li>
+      <li><a href="#certifications">Certifications</a></li>
+      <li><button class="theme-toggle" id="themeToggle" aria-label="Changer de thème" onclick="toggleTheme()">◐</button></li>
+    </ul>
+    <div class="nav-cta-wrap">
+      <a href="#contact" class="nav-cta">Me contacter</a>
+    </div>
+    <button class="hamburger" onclick="toggleMobileNav()" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="mobile-nav" id="mobileNav">
+  <button class="mobile-close" onclick="toggleMobileNav()" aria-label="Fermer">✕</button>
+  <a href="#about" onclick="toggleMobileNav()">Profil</a>
+  <a href="#skills" onclick="toggleMobileNav()">Compétences</a>
+  <a href="#experience" onclick="toggleMobileNav()">Expérience</a>
+  <a href="#projects" onclick="toggleMobileNav()">Projets</a>
+  <a href="#certifications" onclick="toggleMobileNav()">Certifications</a>
+  <a href="#contact" onclick="toggleMobileNav()">Contact</a>
+  <button class="theme-toggle" onclick="toggleTheme()" style="margin-top:1rem;">◐ Thème</button>
+</div>
+
+<!-- ═══ HERO ═══ -->
+<section id="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div id="about">
+        <div class="hero-kicker"><span class="pulse"></span>Disponible pour stage, mission freelance & opportunités BI</div>
+        <h1 class="hero-name">Hervé Nguefa<br><span class="it">Djifack</span></h1>
+        <p class="hero-bio">
+          Étudiant en <strong>Master 1 Systèmes Embarqués & IA</strong> à l'Université de Douala, je conçois des tableaux de bord et des analyses qui aident à décider — pas seulement à visualiser. Une mission client réelle dans l'élevage industriel m'a appris que la donnée n'a de valeur que si elle change une décision.
+        </p>
+        <div class="hero-btns">
+          <a href="#projects" class="btn-primary">Voir mes projets →</a>
+          <a href="#contact" class="btn-outline">Me contacter</a>
+        </div>
+        <div class="hero-stats">
+          <div>
+            <div class="hstat-num">4<span class="unit">projets</span></div>
+            <div class="hstat-label">Études & dashboards livrés</div>
+          </div>
+          <div>
+            <div class="hstat-num">9<span class="unit">certifs</span></div>
+            <div class="hstat-label">Formations Coursera / DataCamp</div>
+          </div>
+          <div>
+            <div class="hstat-num">1<span class="unit">mission</span></div>
+            <div class="hstat-label">Client réel — secteur agro-industriel</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-panel reveal">
+        <div class="hp-head">
+          <span class="hp-head-title">Profil_BI.dashboard</span>
+          <div class="hp-dots"><span></span><span></span><span></span></div>
+        </div>
+        <div class="hp-row">
+          <span class="hp-row-label">Localisation</span>
+          <span class="hp-row-val">Douala, Cameroun</span>
+        </div>
+        <div class="hp-row">
+          <span class="hp-row-label">Formation</span>
+          <span class="hp-row-val">M1 Syst. Embarqués & IA</span>
+        </div>
+        <div class="hp-row">
+          <span class="hp-row-label">Langue</span>
+          <span class="hp-row-val">Français (courant)</span>
+        </div>
+        <div style="padding-top:.9rem;">
+          <div class="hp-row-label" style="margin-bottom:.5rem;">Power BI / DAX</div>
+          <div class="hp-bar-track"><div class="hp-bar-fill" style="width:88%;background:var(--accent);animation-delay:.15s"></div></div>
+        </div>
+        <div style="padding-top:.8rem;">
+          <div class="hp-row-label" style="margin-bottom:.5rem;">Python (pandas / numpy)</div>
+          <div class="hp-bar-track"><div class="hp-bar-fill" style="width:78%;background:var(--accent-data);animation-delay:.3s"></div></div>
+        </div>
+        <div style="padding-top:.8rem;">
+          <div class="hp-row-label" style="margin-bottom:.5rem;">SQL</div>
+          <div class="hp-bar-track"><div class="hp-bar-fill" style="width:75%;background:var(--accent);animation-delay:.45s"></div></div>
+        </div>
+        <div class="hp-skills">
+          <span class="hp-skill">Power Query</span>
+          <span class="hp-skill">Excel avancé</span>
+          <span class="hp-skill">Clustering</span>
+          <span class="hp-skill">PowerPoint</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SKILLS ═══ -->
+<section class="section" id="skills">
+  <div class="container">
+    <div class="section-head reveal">
+      <div>
+        <div class="eyebrow"><span class="idx">01</span> Expertise technique</div>
+        <h2 class="section-title">Compétences <em>techniques</em></h2>
+      </div>
+      <p class="section-note">Compétences construites en formation académique, complétées par 9 certifications ciblées et une mission client réelle.</p>
+    </div>
+
+    <div class="skills-grid">
+      <div class="skill-cell reveal">
+        <div class="skill-cell-num">A</div>
+        <h3>BI & Reporting</h3>
+        <ul class="skill-list">
+          <li>Power BI (dashboards interactifs)</li>
+          <li>DAX & Power Query</li>
+          <li>Conception de KPI</li>
+          <li>PowerPoint exécutif</li>
+        </ul>
+      </div>
+      <div class="skill-cell reveal">
+        <div class="skill-cell-num">B</div>
+        <h3>Données & Code</h3>
+        <ul class="skill-list">
+          <li>Python (pandas, numpy)</li>
+          <li>matplotlib</li>
+          <li>SQL</li>
+          <li>Nettoyage & consolidation</li>
+        </ul>
+      </div>
+      <div class="skill-cell reveal">
+        <div class="skill-cell-num">C</div>
+        <h3>Statistiques</h3>
+        <ul class="skill-list">
+          <li>Analyse descriptive</li>
+          <li>Régression linéaire</li>
+          <li>Clustering (K-Means)</li>
+          <li>Séries temporelles</li>
+        </ul>
+      </div>
+      <div class="skill-cell reveal">
+        <div class="skill-cell-num">D</div>
+        <h3>Outils & terrain</h3>
+        <ul class="skill-list">
+          <li>Excel avancé</li>
+          <li>Google Forms (collecte)</li>
+          <li>Word / rapports</li>
+          <li>Méthodologie Agile</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ EXPERIENCE ═══ -->
+<section class="section section-alt" id="experience">
+  <div class="container">
+    <div class="section-head reveal">
+      <div>
+        <div class="eyebrow"><span class="idx">02</span> Parcours</div>
+        <h2 class="section-title">Expérience <em>professionnelle</em></h2>
+      </div>
+      <p class="section-note">Une mission client réelle, complétée par des projets académiques transposables en entreprise.</p>
+    </div>
+
+    <div class="exp-list">
+      <div class="exp-item reveal">
+        <div>
+          <div class="exp-period">2025<span class="exp-type">Mission client</span></div>
+        </div>
+        <div>
+          <div class="exp-role">Étude de marché — Lancement produit</div>
+          <div class="exp-org">Secteur élevage industriel · Douala</div>
+          <ul class="exp-tasks">
+            <li>Collecte de données terrain via Google Forms auprès de consommateurs et distributeurs cibles</li>
+            <li>Analyse descriptive du marché : taille, segmentation, tendances, profils consommateurs</li>
+            <li>Analyse concurrentielle : positionnement, forces, faiblesses, opportunités</li>
+            <li>Conception d'un tableau de bord Power BI pour la visualisation des KPI</li>
+            <li>Rapport PowerPoint condensé pour faciliter la décision client</li>
+            <li>Recommandations stratégiques ayant abouti au lancement effectif de l'activité</li>
+          </ul>
+          <div class="exp-tools">
+            <span class="exp-tool">Google Forms</span>
+            <span class="exp-tool">Power BI</span>
+            <span class="exp-tool">PowerPoint</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="exp-item reveal">
+        <div>
+          <div class="exp-period">2024–2025<span class="exp-type">Projet académique</span></div>
+        </div>
+        <div>
+          <div class="exp-role">Optimisation du processus de décision — Prêts immobiliers</div>
+          <div class="exp-org">Cas d'étude « Crédit Breton »</div>
+          <ul class="exp-tasks">
+            <li>Intégration, nettoyage et consolidation de données clients depuis sources multiples</li>
+            <li>Mise en place d'un système de scoring automatisé des demandes de prêt</li>
+            <li>Conception de KPI et tableaux de bord à destination des directeurs d'agence</li>
+            <li>Identification des dossiers non conformes pour améliorer la qualité des décisions</li>
+          </ul>
+          <div class="exp-tools">
+            <span class="exp-tool">Power BI</span>
+            <span class="exp-tool">Power Query</span>
+            <span class="exp-tool">Python</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PROJECTS ═══ -->
+<section class="section" id="projects">
+  <div class="container">
+    <div class="section-head reveal">
+      <div>
+        <div class="eyebrow"><span class="idx">03</span> Portfolio</div>
+        <h2 class="section-title">Projets <em>réalisés</em></h2>
+      </div>
+      <p class="section-note">Projets académiques et mission client, 2024–2025.</p>
+    </div>
+
+    <div class="projects-grid">
+      <div class="project-card reveal">
+        <div class="pc-top">
+          <span class="pc-tag">Mission client</span>
+          <div class="pc-metric">1<span>lancement produit réussi</span></div>
+        </div>
+        <div class="pc-title">Étude de marché — Élevage industriel</div>
+        <div class="pc-desc">Étude complète pour un lancement produit : collecte terrain, analyse concurrentielle et dashboard Power BI ayant directement guidé la décision du client. L'activité a été lancée sur la base des recommandations.</div>
+        <div class="pc-tools"><span class="pc-tool">Google Forms</span><span class="pc-tool">Power BI</span><span class="pc-tool">PowerPoint</span></div>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="pc-top">
+          <span class="pc-tag">Power BI</span>
+          <div class="pc-metric">100<span class="mono">% automatisé</span></div>
+        </div>
+        <div class="pc-title">Scoring de prêts immobiliers — Crédit Breton</div>
+        <div class="pc-desc">Système de scoring automatisé des demandes de prêt, avec consolidation multi-sources et dashboards de pilotage pour les directeurs d'agence. Identification des dossiers non conformes.</div>
+        <div class="pc-tools"><span class="pc-tool">Power BI</span><span class="pc-tool">Power Query</span><span class="pc-tool">Python</span></div>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="pc-top">
+          <span class="pc-tag">Machine Learning</span>
+          <div class="pc-metric">K<span class="mono">-Means clustering</span></div>
+        </div>
+        <div class="pc-title">Segmentation de clientèle</div>
+        <div class="pc-desc">Prétraitement et normalisation de données comportementales clients, application de K-Means et interprétation des profils obtenus pour des actions marketing ciblées.</div>
+        <div class="pc-tools"><span class="pc-tool">Python</span><span class="pc-tool">pandas</span><span class="pc-tool">scikit-learn</span></div>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="pc-top">
+          <span class="pc-tag">Projet perso</span>
+          <div class="pc-metric">r<span class="mono">corrélation testée</span></div>
+        </div>
+        <div class="pc-title">Analyse de la satisfaction client</div>
+        <div class="pc-desc">Nettoyage et préparation de données d'enquête, statistique descriptive et analyse de corrélation entre variables pour formuler des recommandations d'amélioration du service.</div>
+        <div class="pc-tools"><span class="pc-tool">Python</span><span class="pc-tool">Excel</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CERTIFICATIONS ═══ -->
+<section class="section section-alt" id="certifications">
+  <div class="container">
+    <div class="section-head reveal">
+      <div>
+        <div class="eyebrow"><span class="idx">04</span> Formation continue</div>
+        <h2 class="section-title">Certifications <em>& formation</em></h2>
+      </div>
+      <p class="section-note">Coursera & DataCamp, 2025–2026. Vérifiables individuellement via leur lien officiel.</p>
+    </div>
+
+    <div class="certs-grid">
+      <div class="cert-card reveal">
+        <div class="cert-top"><div class="cert-name">Power BI: Modeling, Filtering, and Advanced Analysis</div><div class="cert-date">02.2026</div></div>
+        <div class="cert-issuer">Logical Operations · via Coursera</div>
+        <div class="cert-verify"><a href="https://coursera.org/verify/SJAKGZCASZNB" target="_blank" rel="noopener">coursera.org/verify/SJAKGZCASZNB</a></div>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-top"><div class="cert-name">Agile Project Management</div><div class="cert-date">05.2026</div></div>
+        <div class="cert-issuer">Google · via Coursera</div>
+        <div class="cert-verify"><a href="https://coursera.org/verify/NS24FGAW7VM2" target="_blank" rel="noopener">coursera.org/verify/NS24FGAW7VM2</a></div>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-top"><div class="cert-name">Introduction to SQL</div><div class="cert-date">05.2026</div></div>
+        <div class="cert-issuer">DataCamp</div>
+        <div class="cert-verify">Certificat n° 47 755 020</div>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-top"><div class="cert-name">Introduction to SQL Window Functions</div><div class="cert-date">09.2025</div></div>
+        <div class="cert-issuer">Coursera · Projet guidé</div>
+        <div class="cert-verify"><a href="https://coursera.org/verify/PO6PAHUF5E5N" target="_blank" rel="noopener">coursera.org/verify/PO6PAHUF5E5N</a></div>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-top"><div class="cert-name">Overview of Data Visualization</div><div class="cert-date">09.2025</div></div>
+        <div class="cert-issuer">Freedom Learning Group · via Coursera</div>
+        <div class="cert-verify"><a href="https://coursera.org/verify/L0HINA51U41A" target="_blank" rel="noopener">coursera.org/verify/L0HINA51U41A</a></div>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-top"><div class="cert-name">Google Data Studio — Tableaux de bord interactifs</div><div class="cert-date">09.2025</div></div>
+        <div class="cert-issuer">Coursera</div>
+        <div class="cert-verify"><a href="https://coursera.org/verify/YS2N9FPBWDQB" target="_blank" rel="noopener">coursera.org/verify/YS2N9FPBWDQB</a></div>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-top"><div class="cert-name">Prompt Engineering — IA générative pour le marketing</div><div class="cert-date">09.2025</div></div>
+        <div class="cert-issuer">Coursera</div>
+        <div class="cert-verify"><a href="https://coursera.org/verify/0N0GQGHSNRI3" target="_blank" rel="noopener">coursera.org/verify/0N0GQGHSNRI3</a></div>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-top"><div class="cert-name">Créer des maquettes professionnelles avec Moqups</div><div class="cert-date">10.2025</div></div>
+        <div class="cert-issuer">Freedom Learning Group · via Coursera</div>
+        <div class="cert-verify"><a href="https://coursera.org/verify/37SDRP982AS5" target="_blank" rel="noopener">coursera.org/verify/37SDRP982AS5</a></div>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-top"><div class="cert-name">Contenu marketing pour LinkedIn avec Visme</div><div class="cert-date">09.2025</div></div>
+        <div class="cert-issuer">Freedom Learning Group · via Coursera</div>
+        <div class="cert-verify"><a href="https://coursera.org/verify/WTB148CB2ECD" target="_blank" rel="noopener">coursera.org/verify/WTB148CB2ECD</a></div>
+      </div>
+    </div>
+
+    <hr class="divider" style="margin: 4rem 0 2.5rem;">
+
+    <div class="eyebrow" style="margin-bottom:1.5rem;"><span class="idx">—</span> Formation académique</div>
+    <div>
+      <div class="edu-row reveal">
+        <div class="edu-period">2025 – 2026</div>
+        <div class="edu-name">Master 1 — Systèmes Embarqués & Intelligence Artificielle</div>
+        <div class="edu-status accent">En cours</div>
+      </div>
+      <div class="edu-row reveal">
+        <div class="edu-period">2024 – 2025</div>
+        <div class="edu-name">Licence — Systèmes d'Aide à la Décision</div>
+        <div class="edu-status">Université de Douala</div>
+      </div>
+      <div class="edu-row reveal">
+        <div class="edu-period">—</div>
+        <div class="edu-name">Baccalauréat scientifique</div>
+        <div class="edu-status">Cameroun</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CONTACT ═══ -->
+<section class="section" id="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="reveal">
+        <div class="eyebrow"><span class="idx">05</span> Travaillons ensemble</div>
+        <h2 class="contact-title">Travaillons <em>ensemble</em></h2>
+        <p class="contact-sub">Disponible pour un stage, une mission freelance Power BI / reporting, ou une première opportunité Data Analyst. Réponse rapide, échange en français.</p>
+        <div class="contact-links">
+          <a href="mailto:djifackstephane7@gmail.com" class="contact-link">
+            <div><div class="cl-label">Email</div><div class="cl-value">djifackstephane7@gmail.com</div></div>
+            <span class="cl-arrow">→</span>
+          </a>
+          <a href="tel:+237698423662" class="contact-link">
+            <div><div class="cl-label">Téléphone</div><div class="cl-value">+237 698 42 36 62</div></div>
+            <span class="cl-arrow">→</span>
+          </a>
+          <a href="https://linkedin.com/in/herve-nguefa" target="_blank" rel="noopener" class="contact-link">
+            <div><div class="cl-label">LinkedIn</div><div class="cl-value">Hervé NGUEFA</div></div>
+            <span class="cl-arrow">→</span>
+          </a>
+          <a href="https://github.com/herve237ddf" target="_blank" rel="noopener" class="contact-link">
+            <div><div class="cl-label">GitHub</div><div class="cl-value">github.com/herve237ddf</div></div>
+            <span class="cl-arrow">→</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="contact-panel reveal">
+        <div class="cp-label">Statut.config</div>
+        <div class="cp-row"><span class="cp-k">Disponibilité</span><span class="cp-v open">● Ouvert aux opportunités</span></div>
+        <div class="cp-row"><span class="cp-k">Localisation</span><span class="cp-v">Douala, Cameroun</span></div>
+        <div class="cp-row"><span class="cp-k">Cibles</span><span class="cp-v">Stage · Freelance · CDI junior</span></div>
+        <div class="cp-row"><span class="cp-k">Secteurs visés</span><span class="cp-v">BI · Data · Orgs. internationales</span></div>
+        <div class="cp-row"><span class="cp-k">Langue de travail</span><span class="cp-v">Français</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  © 2026 Hervé Nguefa Djifack — Douala, Cameroun
+</footer>
+
+<script>
+  /* ── theme toggle (persisted, defaults to dark, respects OS pref on first visit) ── */
+  (function initTheme() {
+    let saved;
+    try { saved = localStorage.getItem('hnd-theme'); } catch (e) { saved = null; }
+    if (!saved) {
+      saved = (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
+    }
+    document.documentElement.setAttribute('data-theme', saved);
+    updateToggleIcon(saved);
+  })();
+
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('hnd-theme', next); } catch (e) {}
+    updateToggleIcon(next);
+  }
+
+  function updateToggleIcon(theme) {
+    const btn = document.getElementById('themeToggle');
+    if (btn) btn.textContent = theme === 'dark' ? '◐' : '◑';
+  }
+
+  /* ── mobile nav ── */
+  function toggleMobileNav() {
+    document.getElementById('mobileNav').classList.toggle('open');
+  }
+  document.querySelectorAll('.mobile-nav a').forEach(a => {
+    a.addEventListener('click', () => document.getElementById('mobileNav').classList.remove('open'));
+  });
+
+  /* ── scroll reveal ── */
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
